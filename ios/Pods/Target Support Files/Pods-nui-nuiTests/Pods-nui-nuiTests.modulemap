@@ -1,0 +1,6 @@
+module Pods_nui_nuiTests {
+  umbrella header "Pods-nui-nuiTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module Pods_nui {
+  umbrella header "Pods-nui-umbrella.h"
+
+  export *
+  module * { export * }
+}
