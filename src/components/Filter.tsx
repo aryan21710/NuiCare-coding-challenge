@@ -9,7 +9,7 @@ export const Filter = ({ query, onQuery }: TFilter) => {
         <TextInput
           style={styles.input}
           placeholder='Search By Title/SubTitle/Level.....'
-          placeholderTextColor='white'
+          placeholderTextColor='grey'
           onChangeText={onQuery}
           defaultValue={query}
         />

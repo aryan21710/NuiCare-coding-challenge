@@ -1,3 +1,5 @@
+
+
 export const firebaseConfig = {
   apiKey: "AIzaSyDuvCIPwf_mJX1FBfTpmX_FB35CIMYYrwo",
   databaseURL: "https://nui-testchallenge-default-rtdb.europe-west1.firebasedatabase.app",
