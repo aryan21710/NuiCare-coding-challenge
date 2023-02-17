@@ -1,120 +1,97 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React, {type PropsWithChildren} from 'react';
+import React, { useCallback, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
+  FlatList,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
-} from 'react-native';
+  RefreshControl
+} from "react-native";
+import { initializeApp } from "firebase/app";
+import { Service } from "./src/components/Service";
+import { Header } from "./src/components/Header";
+import { Filter } from "./src/components/Filter";
+import { useFetchData } from "./src/hooks/useFetchData";
+import { firebaseConfig } from "./firebaseConfig";
+import { TData, TItem } from "./src/types";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+initializeApp(firebaseConfig);
 
-const Section: React.FC<
-  PropsWithChildren<{
-    title: string;
-  }>
-> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+export default function App() {
+  const [data, setData] = useState<TData[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [error, setError] = useState<unknown>(null);
+  const onQuery = (newQuery: string) => setQuery(newQuery);
+  useFetchData(data, setData, setLoading, setError);
 
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setData([]);
+    setIsRefreshing(false);
+  }, [data,isRefreshing]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const flatListData: TData[] = useMemo(() => {
+    return data.filter(
+      (item) =>
+        (item.title?.toLowerCase() ?? "").includes(
+          query.trim().toLowerCase()
+        ) ||
+        (item.subtitle?.toLowerCase() ?? "").includes(
+          query.trim().toLowerCase()
+        ) ||
+        (item.level?.toLowerCase() ?? "").includes(query.trim().toLowerCase())
+    );
+  }, [data, query]);
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+  const renderItem = useCallback(({ item }: TItem) => {
+    return (
+      <Service
+        level={item.level}
+        imageUrl={item.imageUrl}
+        title={item.title}
+        subtitle={item.subtitle}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+    );
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.headerAndFilter}>
         <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+        <Filter query={query} onQuery={onQuery} />
+      </View>
+      <View style={styles.flatlist}>
+        {!loading && !error && data.length > 0 ? (
+          <FlatList
+            data={flatListData}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingBottom: 10 }}
+            keyExtractor={(item) => item["id"]}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            }
+          />
+        ) : (
+          <ActivityIndicator size='large' color='#82b74b' />
+        )}
+      </View>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    backgroundColor: "#3e4444",
+    height: "100%"
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  headerAndFilter: {
+    height: 120
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  flatlist: {
+    margin: 0,
+    paddingHorizontal: 10,
+    flex: 1
+  }
 });
-
-export default App;

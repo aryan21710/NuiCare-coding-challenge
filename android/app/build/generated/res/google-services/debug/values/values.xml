@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">616494959095-42e8v5hsgme1mqr5dpiho60g3917vs7l.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://nui-testchallenge-default-rtdb.europe-west1.firebasedatabase.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">616494959095</string>
+    <string name="google_api_key" translatable="false">AIzaSyDuvCIPwf_mJX1FBfTpmX_FB35CIMYYrwo</string>
+    <string name="google_app_id" translatable="false">1:616494959095:android:d5ba27619f8c2a84e806f2</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDuvCIPwf_mJX1FBfTpmX_FB35CIMYYrwo</string>
+    <string name="google_storage_bucket" translatable="false">nui-testchallenge.appspot.com</string>
+    <string name="project_id" translatable="false">nui-testchallenge</string>
+</resources>
